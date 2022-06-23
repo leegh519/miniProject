@@ -123,25 +123,20 @@ public class CommentDAO extends DAO {
 	}
 
 	// 전체조회 - 게시글 1개에 댓글 전체
-	public List<Comment> selectCommentAll(int postId) {
-		List<Comment> list = new ArrayList<Comment>();
+	public List<String> selectCommentAll(int postId) {
+		List<String> list = new ArrayList<String>();
 		try {
 			connect();
-			String sql = "SELECT * FROM comments WHERE post_id = ?";
+			String sql = "SELECT LPAD('  ', 2*(level-1))||'└ '||writer_id as writer_id, comment_content FROM comments "
+					+ "START WITH comment_id = (select min(comment_id) from comments where post_id = ?) "
+					+ "CONNECT BY PRIOR comment_id = comment_parent";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, postId);
 
 			rs = pstmt.executeQuery();
-			if (rs.next()) {
-				Comment comment = new Comment();
-				comment.setCommentId(rs.getInt("comment_id"));
-				comment.setWriterId(rs.getString("writer_id"));
-				comment.setCommentContent(rs.getString("comment_content"));
-				comment.setCommentPwd(rs.getString("comment_pwd"));
-				comment.setCommentParent(rs.getInt("comment_parent"));
-				comment.setInsertDate(rs.getDate("insert_date"));
-				comment.setPostId(rs.getInt("post_id"));
-
+			while (rs.next()) {
+				String comment = rs.getString("writer_id") + " : " + rs.getString("comment_content");
+				comment = comment.substring(2);
 				list.add(comment);
 			}
 
@@ -155,3 +150,5 @@ public class CommentDAO extends DAO {
 	}
 
 }
+
+

@@ -4,11 +4,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import com.yedam.app.board.BoardDAO;
 import com.yedam.app.member.Member;
 import com.yedam.app.member.MembersDAO;
+import com.yedam.app.post.CommentDAO;
+import com.yedam.app.post.PostDAO;
 
 public class Management {
 	protected MembersDAO mdao = MembersDAO.getInstance();
+	protected BoardDAO bdao = BoardDAO.getInstance();
+	protected CommentDAO cdao = CommentDAO.getInstance();
+	protected PostDAO pdao = PostDAO.getInstance();
 	protected BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	protected static Member loginInfo = null;
 
@@ -29,12 +35,12 @@ public class Management {
 				anonyBoard();
 			} else if (menu == 4) {
 				// 공지사항
-
+				notice();
 			} else if (menu == 9) {
 				// 종료
 				exit();
 				break;
-			} else if (menu == 0) {
+			} else if (menu == -1) {
 				continue;
 			} else {
 				inputErrMsg();
@@ -43,10 +49,15 @@ public class Management {
 		}
 
 	}
-	
+
 	// 익명게시판
 	private void anonyBoard() {
-		new BoardManagement();
+		new BoardManagement().run(2);
+	}
+
+	// 공지사항
+	private void notice() {
+		new BoardManagement().run(1);
 	}
 
 	private void signUp() {
@@ -135,7 +146,7 @@ public class Management {
 	}
 
 	protected int inputNumber() {
-		int n = 0;
+		int n = -1;
 		try {
 			n = Integer.parseInt(br.readLine());
 		} catch (NumberFormatException e) {
@@ -150,9 +161,14 @@ public class Management {
 		System.out.println("프로그램을 종료합니다.");
 	}
 
+	protected void back() {
+		System.out.println("이전화면으로 돌아갑니다.");
+		System.out.println();
+	}
+
 	protected void menuPrint() {
-		System.out.println("===================================================");
-		System.out.println(" 1.로그인 | 2.회원가입 | 3.익명게시판 | 4.공지사항 | 9.종료");
-		System.out.println("===================================================");
+		System.out.println("----------------------------------------------------------------");
+		System.out.println("  1.로그인 | 2.회원가입 | 3.익명게시판 | 4.공지사항 | 9.종료");
+		System.out.println("----------------------------------------------------------------");
 	}
 }

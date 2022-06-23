@@ -1,3 +1,5 @@
+package com.yedam.app;
+
 import com.yedam.app.common.Management;
 
 public class Main {

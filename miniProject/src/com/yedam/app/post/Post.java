@@ -19,7 +19,7 @@ public class Post {
 
 	@Override
 	public String toString() {
-		return "제목: " + postName + ", 작성자: " + writerId + ", 등록일자: " + insertDate;
+		return "제목: " + postName + ", 작성자: " + writerId + ", 등록일자: " + insertDate + ", 조회수: " + postView;
 	}
 
 }

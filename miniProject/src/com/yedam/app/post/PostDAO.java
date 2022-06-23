@@ -130,7 +130,7 @@ public class PostDAO extends DAO {
 
 			if (rs.next()) {
 				post = new Post();
-				post.setBoardId(rs.getInt("post_id"));
+				post.setPostId(rs.getInt("post_id"));
 				post.setPostName(rs.getString("post_name"));
 				post.setPostContent(rs.getString("post_content"));
 				post.setWriterId(rs.getString("writer_id"));
@@ -150,18 +150,18 @@ public class PostDAO extends DAO {
 	}
 
 	// 전체조회 - 날짜순
-	public List<Post> selectDateOrder() {
+	public List<Post> selectDateOrder(int boardId) {
 		List<Post> list = new ArrayList<>();
 		try {
 			connect();
-			String sql = "SELECT * FROM posts ORDER BY insert_date DESC";
+			String sql = "SELECT * FROM posts WHERE board_id = ? ORDER BY insert_date DESC";
 			pstmt = conn.prepareStatement(sql);
-
+			pstmt.setInt(1, boardId);
 			rs = pstmt.executeQuery();
 
-			if (rs.next()) {
+			while (rs.next()) {
 				Post post = new Post();
-				post.setBoardId(rs.getInt("post_id"));
+				post.setPostId(rs.getInt("post_id"));
 				post.setPostName(rs.getString("post_name"));
 				post.setPostContent(rs.getString("post_content"));
 				post.setWriterId(rs.getString("writer_id"));
@@ -183,16 +183,16 @@ public class PostDAO extends DAO {
 	}
 
 	// 전체조회 - 날짜순
-	public List<Post> selectViewOrder() {
+	public List<Post> selectViewOrder(int boardId) {
 		List<Post> list = new ArrayList<>();
 		try {
 			connect();
-			String sql = "SELECT * FROM posts ORDER BY post_view";
+			String sql = "SELECT * FROM posts WHERE board_id = ? ORDER BY post_view DESC";
 			pstmt = conn.prepareStatement(sql);
-
+			pstmt.setInt(1, boardId);
 			rs = pstmt.executeQuery();
 
-			if (rs.next()) {
+			while (rs.next()) {
 				Post post = new Post();
 				post.setBoardId(rs.getInt("post_id"));
 				post.setPostName(rs.getString("post_name"));
