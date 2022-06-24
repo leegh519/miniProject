@@ -1,6 +1,5 @@
 package com.yedam.app.post;
 
-import java.sql.Date;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,9 +10,9 @@ public class Post {
 	private int postId;
 	private String postName;
 	private String postContent;
-	private String writerId;
-	private Date insertDate;
-	private Date updateDate;
+	private String writerId = "anony";
+	private String insertDate;
+	private String updateDate;
 	private int postView;
 	private int boardId;
 

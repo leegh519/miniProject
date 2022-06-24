@@ -1,7 +1,5 @@
 package com.yedam.app.member;
 
-import java.sql.Date;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,8 +10,9 @@ public class Member {
 	private String id;
 	private String password;
 	// 0:관리자, 1:일반유저, 2:정지당한유저
-	private int role;
-	private Date regDate;
+	private int writeRole;
+	private int readRole;
+	private String regDate;
 	private String phone;
 
 	@Override

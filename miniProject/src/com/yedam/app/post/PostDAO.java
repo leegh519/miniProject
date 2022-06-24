@@ -26,11 +26,12 @@ public class PostDAO extends DAO {
 
 		try {
 			connect();
-			String sql = "INSERT INTO posts (post_id, post_name, post_content, writer_id) VALUES (post_id_seq.nextval, ?, ?, ?)";
+			String sql = "INSERT INTO posts (post_id, post_name, post_content, writer_id, board_id) VALUES (post_id_seq.nextval, ?, ?, ?, ?)";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, post.getPostName());
 			pstmt.setString(2, post.getPostContent());
 			pstmt.setString(3, post.getWriterId());
+			pstmt.setInt(4, post.getBoardId());
 
 			int result = pstmt.executeUpdate();
 
@@ -134,8 +135,8 @@ public class PostDAO extends DAO {
 				post.setPostName(rs.getString("post_name"));
 				post.setPostContent(rs.getString("post_content"));
 				post.setWriterId(rs.getString("writer_id"));
-				post.setInsertDate(rs.getDate("insert_date"));
-				post.setUpdateDate(rs.getDate("update_date"));
+				post.setInsertDate(rs.getString("insert_date"));
+				post.setUpdateDate(rs.getString("update_date"));
 				post.setPostView(rs.getInt("post_view"));
 				post.setBoardId(rs.getInt("board_id"));
 			}
@@ -165,8 +166,8 @@ public class PostDAO extends DAO {
 				post.setPostName(rs.getString("post_name"));
 				post.setPostContent(rs.getString("post_content"));
 				post.setWriterId(rs.getString("writer_id"));
-				post.setInsertDate(rs.getDate("insert_date"));
-				post.setUpdateDate(rs.getDate("update_date"));
+				post.setInsertDate(rs.getString("insert_date"));
+				post.setUpdateDate(rs.getString("update_date"));
 				post.setPostView(rs.getInt("post_view"));
 				post.setBoardId(rs.getInt("board_id"));
 
@@ -187,19 +188,19 @@ public class PostDAO extends DAO {
 		List<Post> list = new ArrayList<>();
 		try {
 			connect();
-			String sql = "SELECT * FROM posts WHERE board_id = ? ORDER BY post_view DESC";
+			String sql = "SELECT * FROM posts WHERE board_id = ? ORDER BY post_view DESC, insert_date DESC";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, boardId);
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
 				Post post = new Post();
-				post.setBoardId(rs.getInt("post_id"));
+				post.setPostId(rs.getInt("post_id"));
 				post.setPostName(rs.getString("post_name"));
 				post.setPostContent(rs.getString("post_content"));
 				post.setWriterId(rs.getString("writer_id"));
-				post.setInsertDate(rs.getDate("insert_date"));
-				post.setUpdateDate(rs.getDate("update_date"));
+				post.setInsertDate(rs.getString("insert_date"));
+				post.setUpdateDate(rs.getString("update_date"));
 				post.setPostView(rs.getInt("post_view"));
 				post.setBoardId(rs.getInt("board_id"));
 

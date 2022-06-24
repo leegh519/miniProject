@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import com.yedam.app.board.Board;
 import com.yedam.app.board.BoardDAO;
 import com.yedam.app.member.Member;
 import com.yedam.app.member.MembersDAO;
@@ -16,7 +17,9 @@ public class Management {
 	protected CommentDAO cdao = CommentDAO.getInstance();
 	protected PostDAO pdao = PostDAO.getInstance();
 	protected BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	protected StringBuilder sb = new StringBuilder();
 	protected static Member loginInfo = null;
+	protected String line = "----------------------------------------------------------------";
 
 	public void run() {
 
@@ -52,12 +55,14 @@ public class Management {
 
 	// 익명게시판
 	private void anonyBoard() {
-		new BoardManagement().run(2);
+		Board board = bdao.selectOne(2);
+		new BoardManagement().run(board);
 	}
 
 	// 공지사항
 	private void notice() {
-		new BoardManagement().run(1);
+		Board board = bdao.selectOne(1);
+		new BoardManagement().run(board);
 	}
 
 	private void signUp() {
@@ -113,6 +118,7 @@ public class Management {
 		// 비밀번호 일치확인
 		if (!member.getPassword().equals(password)) {
 			System.out.println("비밀번호가 일치하지 않습니다.");
+			return;
 		}
 
 		// 로그인 정보 저장
@@ -120,16 +126,17 @@ public class Management {
 		System.out.println("로그인성공");
 
 		// 관리자로 로그인시 실행
-		if (loginInfo.getRole() == 0) {
-			new Admin();
+		if (loginInfo.getWriteRole() == 0) {
+			new LoginMember().run();;
 		}
 		// 일반회원 로그인시 실행
-		else if (loginInfo.getRole() == 1) {
-			new LoginMember();
+		else if (loginInfo.getWriteRole() == 1) {
+			new LoginMember().run();;
 		}
 
 	}
 
+	// 문자열 한줄 입력
 	protected String inputString() {
 		String str = "";
 		try {
@@ -138,6 +145,23 @@ public class Management {
 			e.printStackTrace();
 		}
 		return str;
+	}
+
+	// 문자열 여러줄 입력
+	protected String inputContent() {
+		String str = "";
+		try {
+			while (true) {
+				str = br.readLine();
+				if (str.equals("0")) {
+					break;
+				}
+				sb.append(str + "\n");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return sb.toString();
 	}
 
 	protected int selectMenu() {

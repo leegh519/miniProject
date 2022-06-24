@@ -24,9 +24,11 @@ public class BoardDAO extends DAO {
 	public void insert(Board board) {
 		try {
 			connect();
-			String sql = "INSERT INTO boards (board_id, board_name) VALUES (board_id_seq.nextval, ?)";
+			String sql = "INSERT INTO boards (board_id, board_name, board_readrole, board_writerole) VALUES (board_id_seq.nextval, ?, ?, ?)";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, board.getBoardName());
+			pstmt.setInt(2, board.getReadRole());
+			pstmt.setInt(3, board.getWriteRole());
 
 			int result = pstmt.executeUpdate();
 

@@ -75,10 +75,11 @@ public class MembersDAO extends DAO {
 
 		try {
 			connect();
-			String sql = "UPDATE members SET role = ? WHERE id = ?";
+			String sql = "UPDATE members SET readrole = ?, writerole=? WHERE id = ?";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, member.getRole());
-			pstmt.setString(2, member.getId());
+			pstmt.setInt(1, member.getReadRole());
+			pstmt.setInt(2, member.getWriteRole());
+			pstmt.setString(3, member.getId());
 
 			int result = pstmt.executeUpdate();
 
@@ -131,8 +132,9 @@ public class MembersDAO extends DAO {
 				Member m = new Member();
 				m.setId(rs.getString("id"));
 				m.setPassword(rs.getString("password"));
-				m.setRole(rs.getInt("role"));
-				m.setRegDate(rs.getDate("reg_date"));
+				m.setReadRole(rs.getInt("readrole"));
+				m.setWriteRole(rs.getInt("writerole"));
+				m.setRegDate(rs.getString("reg_date"));
 				m.setPhone(rs.getString("phone"));
 				list.add(m);
 			}
@@ -158,8 +160,9 @@ public class MembersDAO extends DAO {
 				member = new Member();
 				member.setId(rs.getString("id"));
 				member.setPassword(rs.getString("password"));
-				member.setRole(rs.getInt("role"));
-				member.setRegDate(rs.getDate("reg_date"));
+				member.setReadRole(rs.getInt("readrole"));
+				member.setWriteRole(rs.getInt("writerole"));
+				member.setRegDate(rs.getString("reg_date"));
 				member.setPhone(rs.getString("phone"));
 			}
 

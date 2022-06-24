@@ -1,6 +1,5 @@
 package com.yedam.app.post;
 
-import java.sql.Date;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,16 +8,16 @@ import lombok.Setter;
 @Setter
 public class Comment {
 	private int commentId;
-	private String WriterId;
+	private String WriterId = "anony";
 	private String commentContent;
 	private String commentPwd;
 	private int commentParent;
-	private Date insertDate;
+	private String insertDate;
 	private int postId;
 
 	@Override
 	public String toString() {
-		return "작성자: " + WriterId + ", 내용: " + commentContent + ", 작성일: " + insertDate;
+		return WriterId + ": " + commentContent + ", 작성일: " + insertDate;
 	}
 
 }
