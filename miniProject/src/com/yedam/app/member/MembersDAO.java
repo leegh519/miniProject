@@ -45,20 +45,23 @@ public class MembersDAO extends DAO {
 
 	}
 
-	// 수정 - 비밀번호
+	// 수정 - 비밀번호, 전화번호
 	public void updatePwd(Member member) {
 
 		try {
 			connect();
-			String sql = "UPDATE members SET password = ? WHERE id = ?";
+			String sql = "UPDATE members SET password = ?, phone = ?, readrole = ?, writerole = ? WHERE id = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, member.getPassword());
-			pstmt.setString(2, member.getId());
+			pstmt.setString(2, member.getPhone());
+			pstmt.setInt(3, member.getReadRole());
+			pstmt.setInt(4, member.getWriteRole());
+			pstmt.setString(5, member.getId());
 
 			int result = pstmt.executeUpdate();
 
 			if (result > 0) {
-				System.out.println("비밀번호가 수정되었습니다.");
+				System.out.println("수정되었습니다.");
 			} else {
 				System.out.println("수정이 실패하였습니다.");
 			}
@@ -124,7 +127,7 @@ public class MembersDAO extends DAO {
 		List<Member> list = new ArrayList<Member>();
 		try {
 			connect();
-			String sql = "SELECT * FROM members";
+			String sql = "SELECT * FROM members ORDER BY reg_date";
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
 

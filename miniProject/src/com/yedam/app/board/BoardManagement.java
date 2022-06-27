@@ -1,10 +1,11 @@
-package com.yedam.app.common;
+package com.yedam.app.board;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.yedam.app.board.Board;
+import com.yedam.app.common.Management;
 import com.yedam.app.post.Post;
+import com.yedam.app.post.PostManagement;
 
 public class BoardManagement extends Management {
 
@@ -14,11 +15,7 @@ public class BoardManagement extends Management {
 		list = pdao.selectDateOrder(board.getBoardId());
 
 		// 읽기권한 확인
-		if (!hasReadRole(board)) {
-			System.out.println("게시판 접근권한이 없습니다.");
-			return;
-		}
-		while (true) {
+		while (hasReadRole(board)) {
 			System.out.println();
 			System.out.println(line);
 			System.out.println("<" + bdao.selectOne(board.getBoardId()).getBoardName() + ">");
@@ -38,6 +35,9 @@ public class BoardManagement extends Management {
 			} else if (menu == 4) {
 				// 조회순으로 보기
 				printOrderByView(board);
+			} else if (menu == 5) {
+				// 검색
+				searchPost(board);
 			} else if (menu == 9) {
 				// 뒤로가기
 				back();
@@ -47,6 +47,17 @@ public class BoardManagement extends Management {
 			} else {
 				inputErrMsg();
 			}
+		}
+	}
+
+	// 검색 - 제목 또는 내용
+	private void searchPost(Board board) {
+		System.out.print("검색내용> ");
+		String search = inputString();
+		list = pdao.selectNameContent(search, board.getBoardId());
+		if (list.size() == 0) {
+			System.out.println("검색결과가 없습니다.");
+			list = pdao.selectDateOrder(board.getBoardId());
 		}
 	}
 
@@ -66,11 +77,8 @@ public class BoardManagement extends Management {
 		return true;
 	}
 
-	// 게시물 작성
-	private void writePost(Board board) {
-		// 쓰기 권한 여부 확인
-		Post post = new Post();
-
+	// 쓰기 권한 여부 확인
+	protected boolean hasWriteRole(Board board) {
 		// 2(비회원)를 기본값으로 주고
 		// 로그인 계정이 있으면 계정에서 쓰기 권한값을 가져옴
 		int writeRole = 2;
@@ -78,27 +86,34 @@ public class BoardManagement extends Management {
 			writeRole = loginInfo.getWriteRole();
 		}
 		if (board.getWriteRole() < writeRole) {
-			System.out.println("글쓰기 권한이 없습니다.");
-			return;
+			System.out.println("권한이 없습니다.");
+			return false;
 		}
+		return true;
+	}
 
-		// 제목, 내용입력
-		System.out.print("제목> ");
-		post.setPostName(inputString());
-		System.out.print("내용(그만 입력하려면 0입력)> ");
-		post.setPostContent(inputContent());
+	// 게시물 작성
+	private void writePost(Board board) {
+		// 쓰기 권한 여부 확인
+		if (hasWriteRole(board)) {
+			Post post = new Post();
+			// 제목, 내용입력
+			System.out.print("제목> ");
+			post.setPostName(inputString());
+			System.out.println("내용(그만 입력하려면 0입력)> ");
+			post.setPostContent(inputContent());
 
-		// 게시판 번호, 작성자 설정
-		post.setBoardId(board.getBoardId());
+			// 게시판 번호, 작성자 설정
+			post.setBoardId(board.getBoardId());
 
-		// 익명게시판이 아니면 로그인계정 ID를 작성자로 설정
-		if (board.getWriteRole() < 2) {
-			post.setWriterId(loginInfo.getId());
+			// 익명게시판이 아니면 로그인계정 ID를 작성자로 설정
+			if (board.getWriteRole() < 2) {
+				post.setWriterId(loginInfo.getId());
+			}
+
+			// DB에 등록
+			pdao.insert(post);
 		}
-
-		// DB에 등록
-		pdao.insert(post);
-
 	}
 
 	// 게시물 보기
@@ -118,18 +133,15 @@ public class BoardManagement extends Management {
 		post.setPostView(post.getPostView() + 1);
 		pdao.updateView(post);
 
-		// postManagement 실행, post를 매개변수로 전달
-		// 게시물 출력
-		// 댓글 출력
-		// 메뉴 : 게시물 수정, 댓글달기, 댓글수정, 뒤로가기
-		new postManagement(board, post);
+		// postManagement 실행
+		new PostManagement(board, post);
 
 	}
 
 	@Override
 	protected void menuPrint() {
 		System.out.println(line);
-		System.out.println("  1.게시물보기 | 2.글쓰기 | 3.최신순 | 4.조회순 | 9.뒤로가기");
+		System.out.println("  1.게시물보기 | 2.글쓰기 | 3.최신순 | 4.조회순 | 5.검색 | 9.뒤로가기 ");
 		System.out.println(line);
 	}
 

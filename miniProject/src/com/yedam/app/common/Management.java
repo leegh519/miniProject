@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 
 import com.yedam.app.board.Board;
 import com.yedam.app.board.BoardDAO;
+import com.yedam.app.board.BoardManagement;
+import com.yedam.app.member.LoginMember;
 import com.yedam.app.member.Member;
 import com.yedam.app.member.MembersDAO;
 import com.yedam.app.post.CommentDAO;
@@ -21,7 +23,7 @@ public class Management {
 	protected static Member loginInfo = null;
 	protected String line = "----------------------------------------------------------------";
 
-	public void run() {
+	public void run()   {
 
 		while (true) {
 			menuPrint();
@@ -54,18 +56,18 @@ public class Management {
 	}
 
 	// 익명게시판
-	private void anonyBoard() {
+	private void anonyBoard()   {
 		Board board = bdao.selectOne(2);
 		new BoardManagement().run(board);
 	}
 
 	// 공지사항
-	private void notice() {
+	private void notice()   {
 		Board board = bdao.selectOne(1);
 		new BoardManagement().run(board);
 	}
 
-	private void signUp() {
+	private void signUp()   {
 		// ID 입력
 		System.out.print("ID> ");
 		String id = inputString();
@@ -95,11 +97,11 @@ public class Management {
 
 	}
 
-	protected void inputErrMsg() {
+	protected void inputErrMsg()   {
 		System.out.println("메뉴에 없는 기능입니다.");
 	}
 
-	protected void login() {
+	protected void login()   {
 		// ID 입력
 		System.out.print("ID> ");
 		String id = inputString();
@@ -127,11 +129,11 @@ public class Management {
 
 		// 관리자로 로그인시 실행
 		if (loginInfo.getWriteRole() == 0) {
-			new LoginMember().run();;
+			new LoginMember().run();
 		}
 		// 일반회원 로그인시 실행
 		else if (loginInfo.getWriteRole() == 1) {
-			new LoginMember().run();;
+			new LoginMember().run();
 		}
 
 	}
@@ -164,12 +166,12 @@ public class Management {
 		return sb.toString();
 	}
 
-	protected int selectMenu() {
+	protected int selectMenu()   {
 		System.out.print("선택> ");
 		return inputNumber();
 	}
 
-	protected int inputNumber() {
+	protected int inputNumber()   {
 		int n = -1;
 		try {
 			n = Integer.parseInt(br.readLine());
@@ -185,14 +187,13 @@ public class Management {
 		System.out.println("프로그램을 종료합니다.");
 	}
 
-	protected void back() {
+	protected void back()   {
 		System.out.println("이전화면으로 돌아갑니다.");
-		System.out.println();
 	}
 
 	protected void menuPrint() {
-		System.out.println("----------------------------------------------------------------");
+		System.out.println(line);
 		System.out.println("  1.로그인 | 2.회원가입 | 3.익명게시판 | 4.공지사항 | 9.종료");
-		System.out.println("----------------------------------------------------------------");
+		System.out.println(line);
 	}
 }

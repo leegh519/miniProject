@@ -1,22 +1,24 @@
-package com.yedam.app.common;
+package com.yedam.app.post;
 
 import java.util.List;
 
 import com.yedam.app.board.Board;
-import com.yedam.app.post.Comment;
-import com.yedam.app.post.Post;
+import com.yedam.app.board.BoardManagement;
 
-public class postManagement extends BoardManagement {
+public class PostManagement extends BoardManagement {
 
 	private Post post;
 	private List<Comment> comment;
 
-	public postManagement(Board board, Post post) {
+	public PostManagement(Board board, Post post) {
 		while (true) {
 			this.post = pdao.selectOne(post.getPostId());
 			comment = cdao.selectCommentAll(this.post.getPostId());
+			// 글내용 출력
 			postPrint();
+			// 댓글 출력
 			commentPrint(comment);
+			// 메뉴 출력
 			menuPrint();
 			int menu = selectMenu();
 			if (menu == 1) {
@@ -28,7 +30,7 @@ public class postManagement extends BoardManagement {
 			} else if (menu == 3) {
 				// 댓글 수정
 				updateComment(comment, board);
-			} else if (menu == 4 && post.getWriterId().equals(loginInfo.getId())) {
+			} else if (menu == 4 && (post.getWriterId().equals(loginInfo.getId()) || loginInfo.getWriteRole() == 0)) {
 				// 글 내용수정(삭제)
 				updatePost();
 				break;
@@ -48,29 +50,27 @@ public class postManagement extends BoardManagement {
 	// 댓글 수정
 	private void updateComment(List<Comment> comment, Board board) {
 
-		if (loginInfo != null && board.getWriteRole() < loginInfo.getWriteRole()) {
-			System.out.println("댓글을 달수 없는 게시판입니다.");
+		// 쓰기권한 없으면 종료
+		if (!hasWriteRole(board)) {
 			return;
 		}
 
 		// 수정할 댓글 번호 입력
-		System.out.print("댓글번호> ");
-		int commId = inputNumber();
-
-		// 댓글번호 있는지 확인
-		if (commId < 1 || commId > comment.size()) {
-			System.out.println("해당 댓글이 존재하지 않습니다.");
+		int commId = selectComment();
+		if (commId == -1) {
 			return;
 		}
 
 		Comment comm = comment.get(commId - 1);
 
-		// 비밀번호 입력받아서 확인
-		System.out.print("비밀번호> ");
-		String password = inputString();
-		if (!comm.getCommentPwd().equals(password)) {
-			System.out.println("비밀번호가 일치하지 않습니다.");
-			return;
+		if (loginInfo == null || comm.getCommentPwd() != loginInfo.getPassword()) {
+			// 비밀번호 입력받아서 확인
+			System.out.print("비밀번호> ");
+			String password = inputString();
+			if (!comm.getCommentPwd().equals(password)) {
+				System.out.println("비밀번호가 일치하지 않습니다.");
+				return;
+			}
 		}
 
 		// 일치하면 수정할 내용입력 (-1입력하면 삭제)
@@ -87,27 +87,14 @@ public class postManagement extends BoardManagement {
 	// 대댓글 쓰기
 	private void insertReComment(Board board) {
 
-		if (loginInfo != null) {
-			if (board.getWriteRole() < loginInfo.getWriteRole()) {
-				System.out.println("댓글을 달수 없는 게시판입니다.");
-			}
-		} else {
-			if (board.getWriteRole() < 2) {
-				System.out.println("댓글을 달수 없는 게시판입니다.");
-			}
-		}
-
-		if (loginInfo != null && board.getWriteRole() < loginInfo.getWriteRole()) {
-			System.out.println("댓글을 달수 없는 게시판입니다.");
+		// 쓰기권한 없으면 종료
+		if (!hasWriteRole(board)) {
 			return;
 		}
-		// 대댓글 작성할 댓글 번호 입력
-		System.out.print("댓글번호> ");
-		int commId = inputNumber();
 
-		// 댓글번호 있는지 확인
-		if (commId < 1 || commId > comment.size()) {
-			System.out.println("해당 댓글이 존재하지 않습니다.");
+		// 대댓글 작성할 댓글 번호 입력
+		int commId = selectComment();
+		if (commId == -1) {
 			return;
 		}
 
@@ -133,10 +120,23 @@ public class postManagement extends BoardManagement {
 
 	}
 
+	// 댓글번호 선택
+	private int selectComment() {
+		System.out.print("댓글번호> ");
+		int commId = inputNumber();
+
+		// 댓글번호 있는지 확인
+		if (commId < 1 || commId > comment.size()) {
+			System.out.println("해당 댓글이 존재하지 않습니다.");
+			return -1;
+		}
+		return commId;
+	}
+
 	// 댓글 쓰기
 	private void insertComment(Board board) {
-		if (loginInfo != null && board.getWriteRole() < loginInfo.getWriteRole()) {
-			System.out.println("댓글을 달수 없는 게시판입니다.");
+		// 쓰기권한 없으면 종료
+		if (!hasWriteRole(board)) {
 			return;
 		}
 
@@ -161,26 +161,13 @@ public class postManagement extends BoardManagement {
 
 	}
 
-	@Override
-	protected void menuPrint() {
-		String menu = " 1.댓글작성 | 2.대댓글작성 | 3.댓글수정 ";
-		// 게시물 작성자가 현재 로그인한 사용자면 글수정기능 추가
-		if (loginInfo != null && post.getWriterId().equals(loginInfo.getId())) {
-			menu += "| 4.게시물수정 ";
-		}
-		menu += "| 9.뒤로가기 ";
-		System.out.println(line);
-		System.out.println(menu);
-		System.out.println(line);
-	}
-
 	// 글 내용수정(삭제)
 	private void updatePost() {
 
 		// 일치하면 수정할 내용입력 (-1입력하면 삭제)
 		System.out.println("수정할내용 입력(-1: 삭제, 0: 입력마침)");
 		String content = inputContent();
-		if (content.equals("-1")) {
+		if (content.equals("-1\n")) {
 			pdao.delete(post.getPostId());
 		} else {
 			post.setPostContent(content);
@@ -188,6 +175,7 @@ public class postManagement extends BoardManagement {
 		}
 	}
 
+	// 댓글 출력
 	private void commentPrint(List<Comment> comment) {
 		System.out.println(line);
 		System.out.println("댓글 " + comment.size());
@@ -197,11 +185,24 @@ public class postManagement extends BoardManagement {
 		}
 	}
 
+	// 글목록 출력
 	private void postPrint() {
 		System.out.println(line);
-		System.out.println("제목 : " + post.getPostName());
+		System.out.println("제목: " + post.getPostName());
 		System.out.println();
 		System.out.println(post.getPostContent());
 	}
 
+	@Override
+	protected void menuPrint() {
+		String menu = " 1.댓글작성 | 2.대댓글작성 | 3.댓글수정 ";
+		// 게시물 작성자가 현재 로그인한 사용자면 글수정기능 추가
+		if (loginInfo != null && (post.getWriterId().equals(loginInfo.getId()) || loginInfo.getWriteRole() == 0)) {
+			menu += "| 4.게시물수정 ";
+		}
+		menu += "| 9.뒤로가기 ";
+		System.out.println(line);
+		System.out.println(menu);
+		System.out.println(line);
+	}
 }

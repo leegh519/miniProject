@@ -83,10 +83,6 @@ public class PostDAO extends DAO {
 
 			pstmt.executeUpdate();
 
-//			if (result > 0) {
-//				System.out.println("게시물이 수정되었습니다.");
-//			}
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -191,6 +187,105 @@ public class PostDAO extends DAO {
 			String sql = "SELECT * FROM posts WHERE board_id = ? ORDER BY post_view DESC, insert_date DESC";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, boardId);
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				Post post = new Post();
+				post.setPostId(rs.getInt("post_id"));
+				post.setPostName(rs.getString("post_name"));
+				post.setPostContent(rs.getString("post_content"));
+				post.setWriterId(rs.getString("writer_id"));
+				post.setInsertDate(rs.getString("insert_date"));
+				post.setUpdateDate(rs.getString("update_date"));
+				post.setPostView(rs.getInt("post_view"));
+				post.setBoardId(rs.getInt("board_id"));
+
+				list.add(post);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			disconnect();
+		}
+
+		return list;
+	}
+
+	// 전체조회 - 작성자 ID
+	public List<Post> selectWriter(String writerId) {
+		List<Post> list = new ArrayList<>();
+		try {
+			connect();
+			String sql = "SELECT * FROM posts WHERE writer_id = ? ORDER BY insert_date DESC";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, writerId);
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				Post post = new Post();
+				post.setPostId(rs.getInt("post_id"));
+				post.setPostName(rs.getString("post_name"));
+				post.setPostContent(rs.getString("post_content"));
+				post.setWriterId(rs.getString("writer_id"));
+				post.setInsertDate(rs.getString("insert_date"));
+				post.setUpdateDate(rs.getString("update_date"));
+				post.setPostView(rs.getInt("post_view"));
+				post.setBoardId(rs.getInt("board_id"));
+
+				list.add(post);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			disconnect();
+		}
+
+		return list;
+	}
+
+	// 전체조회 - 제목이나 내용 검색
+	public List<Post> selectNameContent(String search, int boardId) {
+		List<Post> list = new ArrayList<>();
+		try {
+			connect();
+			String sql = "SELECT * FROM posts WHERE board_id = ? AND (post_name LIKE '%" + search
+					+ "%' OR post_content LIKE '%" + search + "%') ORDER BY insert_date DESC";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, boardId);
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				Post post = new Post();
+				post.setPostId(rs.getInt("post_id"));
+				post.setPostName(rs.getString("post_name"));
+				post.setPostContent(rs.getString("post_content"));
+				post.setWriterId(rs.getString("writer_id"));
+				post.setInsertDate(rs.getString("insert_date"));
+				post.setUpdateDate(rs.getString("update_date"));
+				post.setPostView(rs.getInt("post_view"));
+				post.setBoardId(rs.getInt("board_id"));
+
+				list.add(post);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			disconnect();
+		}
+
+		return list;
+	}
+
+	// 전체조회
+	public List<Post> selectAll() {
+		List<Post> list = new ArrayList<>();
+		try {
+			connect();
+			String sql = "SELECT * FROM posts ORDER BY insert_date DESC";
+			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {

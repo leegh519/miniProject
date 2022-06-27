@@ -1,9 +1,10 @@
-package com.yedam.app.common;
+package com.yedam.app.member;
 
 import java.util.List;
 
 import com.yedam.app.board.Board;
-import com.yedam.app.member.MemberManagement;
+import com.yedam.app.board.BoardManagement;
+import com.yedam.app.common.Management;
 
 public class LoginMember extends Management {
 
@@ -11,7 +12,7 @@ public class LoginMember extends Management {
 	private Board board;
 	private List<Board> list;
 
-	public void run() {
+	public void run()   {
 
 		while (true) {
 			menuPrint();
@@ -39,7 +40,7 @@ public class LoginMember extends Management {
 		}
 	}
 
-	private void insertBoard() {
+	private void insertBoard()   {
 		Board newBoard = new Board();
 		System.out.print("게시판이름> ");
 		newBoard.setBoardName(inputString());
@@ -51,14 +52,18 @@ public class LoginMember extends Management {
 	}
 
 	// 게시판 선택
-	private void selectBoard(int menu) {
+	private void selectBoard(int menu)   {
 		board = list.get(menu - 2);
 		new BoardManagement().run(board);
 	}
 
 	// 마이페이지
-	private void myPage() {
-		new MemberManagement().run(loginInfo);
+	private void myPage()   {
+		if (loginInfo.getWriteRole() == 0) {
+			new AdminManagement().run(loginInfo);	
+		}else {
+			new MemberManagement().run(loginInfo);			
+		}
 	}
 
 	// 로그아웃
@@ -72,8 +77,13 @@ public class LoginMember extends Management {
 		list = bdao.selectAllBoard();
 		String boardList = " 0.로그아웃 | 1.마이페이지 ";
 		System.out.println(line);
+		int cnt = 1;
 		for (int i = 0; i < list.size(); i++) {
 			boardList = boardList + "| " + (i + 2) + "." + list.get(i).getBoardName() + " ";
+			if (boardList.length() > 50 * cnt) {
+				boardList += "\n ";
+				cnt++;
+			}
 		}
 		if (loginInfo.getWriteRole() == 0) {
 			boardList += "| " + (list.size() + 2) + ".게시판추가";

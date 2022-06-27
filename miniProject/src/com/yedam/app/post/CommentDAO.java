@@ -184,4 +184,64 @@ public class CommentDAO extends DAO {
 		return list;
 	}
 
+	// 전체조회 - 게시글 1개에 댓글 전체
+	public List<Comment> selectCommentWriterAll(String writerId) {
+		List<Comment> list = new ArrayList<Comment>();
+		try {
+			connect();
+			String sql = "SELECT * FROM comments WHERE writer_id = ? ORDER BY insert_date";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, writerId);
+
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				Comment comment = new Comment();
+				comment.setCommentId(rs.getInt("comment_id"));
+				comment.setWriterId(rs.getString("writer_id"));
+				comment.setCommentContent(rs.getString("comment_content"));
+				comment.setCommentPwd(rs.getString("comment_pwd"));
+				comment.setCommentParent(rs.getInt("comment_parent"));
+				comment.setInsertDate(rs.getString("insert_date"));
+				comment.setPostId(rs.getInt("post_id"));
+				list.add(comment);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			disconnect();
+		}
+
+		return list;
+	}
+
+	public List<Comment> selectAll() {
+		List<Comment> list = new ArrayList<Comment>();
+		try {
+			connect();
+			String sql = "SELECT * FROM comments ORDER BY insert_date";
+			pstmt = conn.prepareStatement(sql);
+
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				Comment comment = new Comment();
+				comment.setCommentId(rs.getInt("comment_id"));
+				comment.setWriterId(rs.getString("writer_id"));
+				comment.setCommentContent(rs.getString("comment_content"));
+				comment.setCommentPwd(rs.getString("comment_pwd"));
+				comment.setCommentParent(rs.getInt("comment_parent"));
+				comment.setInsertDate(rs.getString("insert_date"));
+				comment.setPostId(rs.getInt("post_id"));
+				list.add(comment);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			disconnect();
+		}
+
+		return list;
+	}
+
 }
