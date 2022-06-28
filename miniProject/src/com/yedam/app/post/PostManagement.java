@@ -11,7 +11,7 @@ public class PostManagement extends BoardManagement {
 	private List<Comment> comment;
 
 	public PostManagement(Board board, Post post) {
-		while (true) {
+		while (hasReadRole(board)) {
 			this.post = pdao.selectOne(post.getPostId());
 			comment = cdao.selectCommentAll(this.post.getPostId());
 			// 글내용 출력
@@ -62,8 +62,8 @@ public class PostManagement extends BoardManagement {
 		}
 
 		Comment comm = comment.get(commId - 1);
-
-		if (loginInfo == null || comm.getCommentPwd() != loginInfo.getPassword()) {
+		if (loginInfo == null || (loginInfo != null
+				&& !cdao.selectOne(comm.getCommentId()).getWriterId().equals(loginInfo.getId()))) {
 			// 비밀번호 입력받아서 확인
 			System.out.print("비밀번호> ");
 			String password = inputString();

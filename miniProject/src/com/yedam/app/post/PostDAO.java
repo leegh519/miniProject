@@ -1,7 +1,9 @@
 package com.yedam.app.post;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import com.yedam.app.common.DAO;
@@ -76,9 +78,9 @@ public class PostDAO extends DAO {
 
 		try {
 			connect();
-			String sql = "UPDATE posts SET post_view = ? WHERE post_id = ?";
+			String sql = "UPDATE posts SET post_view = (post_view + 1), today_view = (? + 1000000) WHERE post_id = ?";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, post.getPostView());
+			pstmt.setInt(1, post.getTodayView());
 			pstmt.setInt(2, post.getPostId());
 
 			pstmt.executeUpdate();
@@ -135,6 +137,7 @@ public class PostDAO extends DAO {
 				post.setUpdateDate(rs.getString("update_date"));
 				post.setPostView(rs.getInt("post_view"));
 				post.setBoardId(rs.getInt("board_id"));
+				post.setTodayView(rs.getInt("today_view"));
 			}
 
 		} catch (SQLException e) {
@@ -166,6 +169,7 @@ public class PostDAO extends DAO {
 				post.setUpdateDate(rs.getString("update_date"));
 				post.setPostView(rs.getInt("post_view"));
 				post.setBoardId(rs.getInt("board_id"));
+				post.setTodayView(rs.getInt("today_view"));
 
 				list.add(post);
 			}
@@ -199,6 +203,7 @@ public class PostDAO extends DAO {
 				post.setUpdateDate(rs.getString("update_date"));
 				post.setPostView(rs.getInt("post_view"));
 				post.setBoardId(rs.getInt("board_id"));
+				post.setTodayView(rs.getInt("today_view"));
 
 				list.add(post);
 			}
@@ -232,6 +237,7 @@ public class PostDAO extends DAO {
 				post.setUpdateDate(rs.getString("update_date"));
 				post.setPostView(rs.getInt("post_view"));
 				post.setBoardId(rs.getInt("board_id"));
+				post.setTodayView(rs.getInt("today_view"));
 
 				list.add(post);
 			}
@@ -266,6 +272,7 @@ public class PostDAO extends DAO {
 				post.setUpdateDate(rs.getString("update_date"));
 				post.setPostView(rs.getInt("post_view"));
 				post.setBoardId(rs.getInt("board_id"));
+				post.setTodayView(rs.getInt("today_view"));
 
 				list.add(post);
 			}
@@ -298,6 +305,44 @@ public class PostDAO extends DAO {
 				post.setUpdateDate(rs.getString("update_date"));
 				post.setPostView(rs.getInt("post_view"));
 				post.setBoardId(rs.getInt("board_id"));
+				post.setTodayView(rs.getInt("today_view"));
+
+				list.add(post);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			disconnect();
+		}
+
+		return list;
+	}
+
+	// 전체조회 - 일일 조회수 top10
+	public List<Post> selectTOP10() {
+		List<Post> list = new ArrayList<>();
+		try {
+			connect();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd");
+			Calendar c1 = Calendar.getInstance();
+			int today = Integer.parseInt(sdf.format(c1.getTime()));
+			String sql = "SELECT * FROM posts WHERE TO_CHAR(today_view) LIKE '%" + today + "'"
+					+ " ORDER BY today_view DESC, insert_date DESC";
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				Post post = new Post();
+				post.setPostId(rs.getInt("post_id"));
+				post.setPostName(rs.getString("post_name"));
+				post.setPostContent(rs.getString("post_content"));
+				post.setWriterId(rs.getString("writer_id"));
+				post.setInsertDate(rs.getString("insert_date"));
+				post.setUpdateDate(rs.getString("update_date"));
+				post.setPostView(rs.getInt("post_view"));
+				post.setBoardId(rs.getInt("board_id"));
+				post.setTodayView(rs.getInt("today_view"));
 
 				list.add(post);
 			}

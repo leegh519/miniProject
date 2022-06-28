@@ -1,6 +1,8 @@
 package com.yedam.app.board;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import com.yedam.app.common.Management;
@@ -10,15 +12,16 @@ import com.yedam.app.post.PostManagement;
 public class BoardManagement extends Management {
 
 	protected List<Post> list = new ArrayList<>();
+	private String order = "d";
 
 	public void run(Board board) {
-		list = pdao.selectDateOrder(board.getBoardId());
 
 		// 읽기권한 확인
 		while (hasReadRole(board)) {
 			System.out.println();
 			System.out.println(line);
 			System.out.println("<" + bdao.selectOne(board.getBoardId()).getBoardName() + ">");
+			listSort(board);
 			postListPrint();
 			menuPrint();
 			int menu = selectMenu();
@@ -28,7 +31,6 @@ public class BoardManagement extends Management {
 			} else if (menu == 2) {
 				// 글쓰기
 				writePost(board);
-				printOrderByDate(board);
 			} else if (menu == 3) {
 				// 날짜순으로 보기
 				printOrderByDate(board);
@@ -50,19 +52,30 @@ public class BoardManagement extends Management {
 		}
 	}
 
-	// 검색 - 제목 또는 내용
-	private void searchPost(Board board) {
-		System.out.print("검색내용> ");
-		String search = inputString();
-		list = pdao.selectNameContent(search, board.getBoardId());
-		if (list.size() == 0) {
-			System.out.println("검색결과가 없습니다.");
-			list = pdao.selectDateOrder(board.getBoardId());
+	// list 정렬&갱신
+	private void listSort(Board board) {
+		if (order.equals("d")) {
+			printOrderByDate(board);
+		} else if (order.equals("v")) {
+			printOrderByView(board);
 		}
 	}
 
+	// 검색 - 제목 또는 내용
+	private void searchPost(Board board) {
+		System.out.print("검색내용> ");
+		String search = notNullCheck();
+		list = pdao.selectNameContent(search, board.getBoardId());
+		if (list.size() == 0) {
+			System.out.println("검색결과가 없습니다.");
+			order = "d";
+			return;
+		}
+		order = "s";
+	}
+
 	// 읽기 권한 여부 확인
-	private boolean hasReadRole(Board board) {
+	protected boolean hasReadRole(Board board) {
 		// 게시판의 권한 확인(0: 관리자, 1: 일반회원, 2:비회원)
 
 		int readRole = 2;
@@ -99,8 +112,8 @@ public class BoardManagement extends Management {
 			Post post = new Post();
 			// 제목, 내용입력
 			System.out.print("제목> ");
-			post.setPostName(inputString());
-			System.out.println("내용(그만 입력하려면 0입력)> ");
+			post.setPostName(notNullCheck());
+			System.out.println("내용(그만 입력하려면 \"저장\"입력)> ");
 			post.setPostContent(inputContent());
 
 			// 게시판 번호, 작성자 설정
@@ -130,7 +143,13 @@ public class BoardManagement extends Management {
 
 		// 조회수 +1
 		Post post = list.get(postId - 1);
-		post.setPostView(post.getPostView() + 1);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd");
+		Calendar c1 = Calendar.getInstance();
+		int today = Integer.parseInt(sdf.format(c1.getTime()));
+		if (post.getTodayView() % 1000000 != today) {
+			post.setTodayView(today);
+		}
+
 		pdao.updateView(post);
 
 		// postManagement 실행
@@ -156,11 +175,13 @@ public class BoardManagement extends Management {
 	// 조회수 순으로 보기
 	protected void printOrderByView(Board board) {
 		list = pdao.selectViewOrder(board.getBoardId());
+		order = "v";
 	}
 
 	// 날짜 순으로 보기
 	protected void printOrderByDate(Board board) {
 		list = pdao.selectDateOrder(board.getBoardId());
+		order = "d";
 	}
 
 }

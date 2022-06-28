@@ -3,6 +3,7 @@ package com.yedam.app.common;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 import com.yedam.app.board.Board;
 import com.yedam.app.board.BoardDAO;
@@ -23,7 +24,7 @@ public class Management {
 	protected static Member loginInfo = null;
 	protected String line = "----------------------------------------------------------------";
 
-	public void run()   {
+	public void run() {
 
 		while (true) {
 			menuPrint();
@@ -56,21 +57,21 @@ public class Management {
 	}
 
 	// 익명게시판
-	private void anonyBoard()   {
+	private void anonyBoard() {
 		Board board = bdao.selectOne(2);
 		new BoardManagement().run(board);
 	}
 
 	// 공지사항
-	private void notice()   {
+	private void notice() {
 		Board board = bdao.selectOne(1);
 		new BoardManagement().run(board);
 	}
 
-	private void signUp()   {
+	private void signUp() {
 		// ID 입력
 		System.out.print("ID> ");
-		String id = inputString();
+		String id = notNullCheck();
 
 		// 가입여부 확인
 		Member member = mdao.selectOne(id);
@@ -81,11 +82,11 @@ public class Management {
 
 		// 비밀번호 입력
 		System.out.print("비밀번호> ");
-		String password = inputString();
+		String password = notNullCheck();
 
 		// 전화번호 입력
 		System.out.print("전화번호> ");
-		String phone = inputString();
+		String phone = notNullCheck();
 
 		member = new Member();
 		member.setId(id);
@@ -97,11 +98,11 @@ public class Management {
 
 	}
 
-	protected void inputErrMsg()   {
+	protected void inputErrMsg() {
 		System.out.println("메뉴에 없는 기능입니다.");
 	}
 
-	protected void login()   {
+	protected void login() {
 		// ID 입력
 		System.out.print("ID> ");
 		String id = inputString();
@@ -138,6 +139,21 @@ public class Management {
 
 	}
 
+	// 입력 not null
+	protected String notNullCheck() {
+		String str;
+		while (true) {
+			str = inputString();
+			StringTokenizer st = new StringTokenizer(str);
+			if (!st.hasMoreTokens()) {
+				System.out.print("내용을 입력하세요> ");
+			} else {
+				break;
+			}
+		}
+		return str;
+	}
+
 	// 문자열 한줄 입력
 	protected String inputString() {
 		String str = "";
@@ -155,10 +171,10 @@ public class Management {
 		try {
 			while (true) {
 				str = br.readLine();
-				if (str.equals("0")) {
+				if (str.equals("저장")) {
 					break;
 				}
-				sb.append(str + "\n");
+				sb.append(str).append("\n");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -166,12 +182,12 @@ public class Management {
 		return sb.toString();
 	}
 
-	protected int selectMenu()   {
+	protected int selectMenu() {
 		System.out.print("선택> ");
 		return inputNumber();
 	}
 
-	protected int inputNumber()   {
+	protected int inputNumber() {
 		int n = -1;
 		try {
 			n = Integer.parseInt(br.readLine());
@@ -187,13 +203,13 @@ public class Management {
 		System.out.println("프로그램을 종료합니다.");
 	}
 
-	protected void back()   {
+	protected void back() {
 		System.out.println("이전화면으로 돌아갑니다.");
 	}
 
 	protected void menuPrint() {
 		System.out.println(line);
-		System.out.println("  1.로그인 | 2.회원가입 | 3.익명게시판 | 4.공지사항 | 9.종료");
+		System.out.println("      1.로그인 | 2.회원가입 | 3.익명게시판 | 4.공지사항 | 9.종료");
 		System.out.println(line);
 	}
 }
