@@ -75,7 +75,7 @@ public class PostManagement extends BoardManagement {
 
 		// 일치하면 수정할 내용입력 (-1입력하면 삭제)
 		System.out.println("수정할내용 입력(-1: 삭제)");
-		String content = inputString();
+		String content = notNullCheck();
 		if (content.equals("-1")) {
 			cdao.delete(comm.getCommentId());
 		} else {
@@ -101,7 +101,7 @@ public class PostManagement extends BoardManagement {
 		// 내용입력
 		Comment comm = new Comment();
 		System.out.print("내용> ");
-		comm.setCommentContent(inputString());
+		comm.setCommentContent(notNullCheck());
 		comm.setPostId(post.getPostId());
 		comm.setCommentParent(comment.get(commId - 1).getCommentId());
 
@@ -113,7 +113,7 @@ public class PostManagement extends BoardManagement {
 		} else {
 			// 비밀번호 입력
 			System.out.print("비밀번호> ");
-			comm.setCommentPwd(inputString());
+			comm.setCommentPwd(notNullCheck());
 		}
 
 		cdao.insertRe(comm);
@@ -143,7 +143,7 @@ public class PostManagement extends BoardManagement {
 		// 내용입력
 		Comment comm = new Comment();
 		System.out.print("내용> ");
-		comm.setCommentContent(inputString());
+		comm.setCommentContent(notNullCheck());
 		comm.setPostId(post.getPostId());
 
 		// 익명게시판이 아니면 로그인계정 ID를 작성자로 설정
@@ -154,7 +154,7 @@ public class PostManagement extends BoardManagement {
 		} else {
 			// 익명게시판이면 비밀번호 입력
 			System.out.print("비밀번호> ");
-			comm.setCommentPwd(inputString());
+			comm.setCommentPwd(notNullCheck());
 		}
 
 		cdao.insert(comm);
@@ -165,7 +165,7 @@ public class PostManagement extends BoardManagement {
 	private void updatePost() {
 
 		// 일치하면 수정할 내용입력 (-1입력하면 삭제)
-		System.out.println("수정할내용 입력(-1: 삭제, 0: 입력마침)");
+		System.out.println("수정할내용 입력(-1: 삭제, 저장: 입력마침)");
 		String content = inputContent();
 		if (content.equals("-1\n")) {
 			pdao.delete(post.getPostId());

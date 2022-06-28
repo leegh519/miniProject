@@ -17,7 +17,7 @@ public class Comment {
 
 	@Override
 	public String toString() {
-		return WriterId + ": " + commentContent + ", 작성일: " + insertDate;
+		return WriterId + ": " + commentContent + ", 작성일: " + insertDate.substring(2);
 	}
 
 }

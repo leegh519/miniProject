@@ -134,9 +134,9 @@ public class AdminManagement extends Management {
 		Member member = list.get(memberNo - 1);
 
 		System.out.print("변경할 비밀번호> ");
-		member.setPassword(inputString());
+		member.setPassword(notNullCheck());
 		System.out.print("변경할 전화번호> ");
-		member.setPhone(inputString());
+		member.setPhone(notNullCheck());
 		System.out.print("변경할 읽기권한> ");
 		member.setReadRole(inputNumber());
 		System.out.print("변경할 쓰기권한> ");

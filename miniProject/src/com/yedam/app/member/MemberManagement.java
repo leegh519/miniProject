@@ -124,9 +124,9 @@ public class MemberManagement extends Management {
 		// 비밀번호, 전화번호 변경
 		else if (choice.toUpperCase().equals("Y")) {
 			System.out.print("변경할 비밀번호> ");
-			loginInfo.setPassword(inputString());
+			loginInfo.setPassword(notNullCheck());
 			System.out.print("변경할 전화번호> ");
-			loginInfo.setPhone(inputString());
+			loginInfo.setPhone(notNullCheck());
 			mdao.updatePwd(loginInfo);
 		}
 	}

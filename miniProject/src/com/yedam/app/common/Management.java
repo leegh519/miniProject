@@ -128,14 +128,9 @@ public class Management {
 		loginInfo = member;
 		System.out.println("로그인성공");
 
-		// 관리자로 로그인시 실행
-		if (loginInfo.getWriteRole() == 0) {
+		
 			new LoginMember().run();
-		}
-		// 일반회원 로그인시 실행
-		else if (loginInfo.getWriteRole() == 1) {
-			new LoginMember().run();
-		}
+		
 
 	}
 
