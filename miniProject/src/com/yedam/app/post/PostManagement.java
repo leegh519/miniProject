@@ -12,6 +12,7 @@ public class PostManagement extends BoardManagement {
 
 	public PostManagement(Board board, Post post) {
 		while (hasReadRole(board)) {
+			clear();
 			this.post = pdao.selectOne(post.getPostId());
 			comment = cdao.selectCommentAll(this.post.getPostId());
 			// 글내용 출력
@@ -68,7 +69,8 @@ public class PostManagement extends BoardManagement {
 			System.out.print("비밀번호> ");
 			String password = inputString();
 			if (!comm.getCommentPwd().equals(password)) {
-				System.out.println("비밀번호가 일치하지 않습니다.");
+				System.out.print("비밀번호가 일치하지 않습니다.");
+				stop1s();
 				return;
 			}
 		}
@@ -127,7 +129,8 @@ public class PostManagement extends BoardManagement {
 
 		// 댓글번호 있는지 확인
 		if (commId < 1 || commId > comment.size()) {
-			System.out.println("해당 댓글이 존재하지 않습니다.");
+			System.out.print("해당 댓글이 존재하지 않습니다.");
+			stop1s();
 			return -1;
 		}
 		return commId;

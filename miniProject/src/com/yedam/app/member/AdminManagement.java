@@ -13,6 +13,7 @@ public class AdminManagement extends Management {
 	public void run(Member loginInfo)   {
 
 		while (true) {
+			clear();
 			menuPrint();
 			int menu = selectMenu();
 			if (menu == 1) {
@@ -41,7 +42,8 @@ public class AdminManagement extends Management {
 		System.out.println("<전체 댓글>");
 		List<Comment> list = cdao.selectAll();
 		if (list.size() == 0) {
-			System.out.println("댓글이 없습니다.");
+			System.out.print("댓글이 없습니다.");
+			stop1s();
 			return;
 		}
 
@@ -57,13 +59,15 @@ public class AdminManagement extends Management {
 		System.out.print("선택(0: 뒤로가기)> ");
 		int commentNo = inputNumber();
 		if (commentNo == 0) {
-			System.out.println("이전화면으로 돌아갑니다.");
+			System.out.print("이전화면으로 돌아갑니다.");
+			stop1s();
 			return;
 		}
 
 		// 인덱스 범위에 해당하는지 확인
 		if (commentNo < 1 || commentNo > list.size()) {
-			System.out.println("해당 댓글이 존재하지 않습니다.");
+			System.out.print("해당 댓글이 존재하지 않습니다.");
+			stop1s();
 			return;
 		}
 		Comment comment = list.get(commentNo - 1);
@@ -77,7 +81,8 @@ public class AdminManagement extends Management {
 		System.out.println("<전체 게시물>");
 		List<Post> list = pdao.selectAll();
 		if (list.size() == 0) {
-			System.out.println("게시물이 없습니다.");
+			System.out.print("게시물이 없습니다.");
+			stop1s();
 			return;
 		}
 
@@ -94,13 +99,15 @@ public class AdminManagement extends Management {
 		System.out.print("선택(0: 뒤로가기)> ");
 		int postNo = inputNumber();
 		if (postNo == 0) {
-			System.out.println("이전화면으로 돌아갑니다.");
+			System.out.print("이전화면으로 돌아갑니다.");
+			stop1s();
 			return;
 		}
 
 		// 인덱스 범위에 해당하는지 확인
 		if (postNo < 1 || postNo > list.size()) {
-			System.out.println("해당 게시물이 존재하지 않습니다.");
+			System.out.print("해당 게시물이 존재하지 않습니다.");
+			stop1s();
 			return;
 		}
 		Post post = list.get(postNo - 1);
@@ -123,12 +130,14 @@ public class AdminManagement extends Management {
 		System.out.print("선택(0: 뒤로가기)> ");
 		int memberNo = inputNumber();
 		if (memberNo == 0) {
-			System.out.println("이전화면으로 돌아갑니다.");
+			System.out.print("이전화면으로 돌아갑니다.");
+			stop1s();
 			return;
 		}
 
 		if (memberNo < 1 || memberNo > list.size()) {
-			System.out.println("해당 회원이 존재하지 않습니다.");
+			System.out.print("해당 회원이 존재하지 않습니다.");
+			stop1s();
 			return;
 		}
 		Member member = list.get(memberNo - 1);

@@ -22,11 +22,12 @@ public class Management {
 	protected BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	protected StringBuilder sb = new StringBuilder();
 	protected static Member loginInfo = null;
-	protected String line = "----------------------------------------------------------------";
+	protected String line = "--------------------------------------------------------------------------------------";
 
 	public void run() {
 
 		while (true) {
+			clear();
 			menuPrint();
 			int menu = selectMenu();
 
@@ -56,6 +57,21 @@ public class Management {
 
 	}
 
+	protected void stop1s() {
+		try {
+			Thread.sleep(800);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// 콘솔창 내용 없애기
+	protected void clear() {
+		for (int i = 0; i < 50; i++) {
+			System.out.println();
+		}
+	}
+
 	// 익명게시판
 	private void anonyBoard() {
 		Board board = bdao.selectOne(2);
@@ -76,7 +92,8 @@ public class Management {
 		// 가입여부 확인
 		Member member = mdao.selectOne(id);
 		if (member != null) {
-			System.out.println("이미 가입된 ID입니다.");
+			System.out.print("이미 가입된 ID입니다.");
+			stop1s();
 			return;
 		}
 
@@ -99,7 +116,8 @@ public class Management {
 	}
 
 	protected void inputErrMsg() {
-		System.out.println("메뉴에 없는 기능입니다.");
+		System.out.print("메뉴에 없는 기능입니다.");
+		stop1s();
 	}
 
 	protected void login() {
@@ -110,7 +128,8 @@ public class Management {
 		// 가입여부 확인
 		Member member = mdao.selectOne(id);
 		if (member == null) {
-			System.out.println("가입되지않은 회원입니다.");
+			System.out.print("가입되지않은 회원입니다.");
+			stop1s();
 			return;
 		}
 
@@ -120,17 +139,17 @@ public class Management {
 
 		// 비밀번호 일치확인
 		if (!member.getPassword().equals(password)) {
-			System.out.println("비밀번호가 일치하지 않습니다.");
+			System.out.print("비밀번호가 일치하지 않습니다.");
+			stop1s();
 			return;
 		}
 
 		// 로그인 정보 저장
 		loginInfo = member;
 		System.out.println("로그인성공");
+		stop1s();
 
-		
-			new LoginMember().run();
-		
+		new LoginMember().run();
 
 	}
 
@@ -167,6 +186,10 @@ public class Management {
 			while (true) {
 				str = br.readLine();
 				if (str.equals("저장")) {
+					if (sb.toString().length() == 0) {
+						System.out.println("내용을 입력하세요>");
+						continue;
+					}
 					break;
 				}
 				sb.append(str).append("\n");
@@ -187,7 +210,7 @@ public class Management {
 		try {
 			n = Integer.parseInt(br.readLine());
 		} catch (NumberFormatException e) {
-			System.out.println("숫자로 입력하세요");
+			System.out.print("숫자로 입력하세요");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -195,11 +218,12 @@ public class Management {
 	}
 
 	protected void exit() {
-		System.out.println("프로그램을 종료합니다.");
+		System.out.print("프로그램을 종료합니다.");
 	}
 
 	protected void back() {
-		System.out.println("이전화면으로 돌아갑니다.");
+		System.out.print("이전화면으로 돌아갑니다.");
+		stop1s();
 	}
 
 	protected void menuPrint() {

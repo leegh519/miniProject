@@ -17,6 +17,7 @@ public class LoginMember extends Management {
 	public void run() {
 
 		while (true) {
+			clear();
 			menuPrint();
 			int menu = selectMenu();
 
@@ -47,11 +48,13 @@ public class LoginMember extends Management {
 
 	// 일일 top10
 	private void top10() {
+		clear();
 		List<Post> list = pdao.selectTOP10();
 		int range = 10;
 		if (list.size() < 10) {
 			range = list.size();
 		}
+		System.out.println("<일일조회수 TOP10>");
 		for (int i = 0; i < range; i++) {
 			System.out.print((i + 1) + ". ");
 			System.out.println(list.get(i));
@@ -63,13 +66,15 @@ public class LoginMember extends Management {
 		System.out.print("선택(0: 뒤로가기)> ");
 		int postNo = inputNumber();
 		if (postNo == 0) {
-			System.out.println("이전화면으로 돌아갑니다.");
+			System.out.print("이전화면으로 돌아갑니다.");
+			stop1s();
 			return;
 		}
 
 		// 인덱스 범위에 해당하는지 확인
 		if (postNo < 1 || postNo > list.size()) {
-			System.out.println("해당 게시물이 존재하지 않습니다.");
+			System.out.print("해당 게시물이 존재하지 않습니다.");
+			stop1s();
 			return;
 		}
 		Post post = list.get(postNo - 1);
@@ -107,7 +112,8 @@ public class LoginMember extends Management {
 
 	// 로그아웃
 	private void logout() {
-		System.out.println("로그아웃합니다.");
+		System.out.print("로그아웃합니다.");
+		stop1s();
 		loginInfo = null;
 	}
 

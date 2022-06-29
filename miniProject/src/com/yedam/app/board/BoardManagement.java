@@ -13,11 +13,13 @@ public class BoardManagement extends Management {
 
 	protected List<Post> list = new ArrayList<>();
 	private String order = "d";
+	private int page = 1;
+	private int lastPage = 1;
 
 	public void run(Board board) {
-
 		// 읽기권한 확인
 		while (hasReadRole(board)) {
+			clear();
 			System.out.println();
 			System.out.println(line);
 			System.out.println("<" + bdao.selectOne(board.getBoardId()).getBoardName() + ">");
@@ -40,6 +42,12 @@ public class BoardManagement extends Management {
 			} else if (menu == 5) {
 				// 검색
 				searchPost(board);
+			} else if (menu == 6) {
+				// 이전페이지
+				previousPage();
+			} else if (menu == 7) {
+				// 다음페이지
+				nextPage();
 			} else if (menu == 9) {
 				// 뒤로가기
 				back();
@@ -52,6 +60,24 @@ public class BoardManagement extends Management {
 		}
 	}
 
+	private void nextPage() {
+		if (page == (list.size() / 10) + 1) {
+			System.out.print("마지막페이지입니다.");
+			stop1s();
+			return;
+		}
+		page++;
+	}
+
+	private void previousPage() {
+		if (page == 1) {
+			System.out.print("첫페이지입니다.");
+			stop1s();
+			return;
+		}
+		page--;
+	}
+
 	// list 정렬&갱신
 	private void listSort(Board board) {
 		if (order.equals("d")) {
@@ -59,6 +85,7 @@ public class BoardManagement extends Management {
 		} else if (order.equals("v")) {
 			printOrderByView(board);
 		}
+		lastPage = (list.size() / 10) + 1;
 	}
 
 	// 검색 - 제목 또는 내용
@@ -67,7 +94,8 @@ public class BoardManagement extends Management {
 		String search = notNullCheck();
 		list = pdao.selectNameContent(search, board.getBoardId());
 		if (list.size() == 0) {
-			System.out.println("검색결과가 없습니다.");
+			System.out.print("검색결과가 없습니다.");
+			stop1s();
 			order = "d";
 			return;
 		}
@@ -84,7 +112,8 @@ public class BoardManagement extends Management {
 			readRole = loginInfo.getReadRole();
 		}
 		if (board.getReadRole() < readRole) {
-			System.out.println("게시판 접근 권한이 없습니다.");
+			System.out.print("게시판 접근 권한이 없습니다.");
+			stop1s();
 			return false;
 		}
 		return true;
@@ -99,7 +128,8 @@ public class BoardManagement extends Management {
 			writeRole = loginInfo.getWriteRole();
 		}
 		if (board.getWriteRole() < writeRole) {
-			System.out.println("권한이 없습니다.");
+			System.out.print("권한이 없습니다.");
+			stop1s();
 			return false;
 		}
 		return true;
@@ -137,7 +167,8 @@ public class BoardManagement extends Management {
 
 		// 인덱스 범위에 해당하는지 확인
 		if (postId < 1 || postId > list.size()) {
-			System.out.println("해당 게시물이 존재하지 않습니다.");
+			System.out.print("해당 게시물이 존재하지 않습니다.");
+			stop1s();
 			return;
 		}
 
@@ -160,16 +191,22 @@ public class BoardManagement extends Management {
 	@Override
 	protected void menuPrint() {
 		System.out.println(line);
-		System.out.println("  1.게시물보기 | 2.글쓰기 | 3.최신순 | 4.조회순 | 5.검색 | 9.뒤로가기 ");
+		System.out.println(
+				"       1.게시물보기 | 2.글쓰기 | 3.최신순 | 4.조회순 | 5.검색 \n" + "             6.이전페이지 | 7.다음페이지 | 9.뒤로가기 ");
 		System.out.println(line);
 	}
 
 	// 전체 게시물 출력
 	protected void postListPrint() {
-		for (int i = 0; i < list.size(); i++) {
+		int start = (page - 1) * 10;
+		for (int i = start; i < start + 10; i++) {
+			if (i >= list.size()) {
+				break;
+			}
 			System.out.print((i + 1) + ". ");
 			System.out.println(list.get(i));
 		}
+		System.out.println("(현재페이지 "+page+"/"+lastPage+")");
 	}
 
 	// 조회수 순으로 보기
